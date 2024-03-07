@@ -1,7 +1,7 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { model } from "./routes";
+import { prediction, workflow } from "./routes";
 
 // Create the express app and import the type of app from express;
 const app: Application = express();
@@ -20,12 +20,23 @@ app.use(express.urlencoded({ extended: true }));
 // Declate the PORT:
 const port = process.env.PORT || 5000;
 
+const requireAuthorization = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Replicate API key missing' });
+  }
+  next(); // Continue to the next middleware or route handler
+};
+// Apply the requireAuthorization middleware to all routes under "/api/prediction" model running...
+app.use("/api/model", requireAuthorization);
+
 app.get("/", (req: Request, res: Response) => {
   res.send("TPU API Server running...");
 });
 
-// Users Routes
-app.use("/api/model", model);
+// All Routes
+app.use("/api/model", prediction);
+app.use("/api/workflow", workflow);
 
 // Listen the server
 app.listen(port, async () => {

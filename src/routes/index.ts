@@ -1,3 +1,4 @@
-import model from "./model";
+import prediction from "./model";
+import workflow from "./workflow";
 
-export { model };
+export { prediction, workflow };

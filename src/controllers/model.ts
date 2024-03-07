@@ -1,25 +1,15 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middleware/asyncHandler";
-import type { IModel } from "../types/index";
 import Replicate from "replicate";
 
-export const runModel = asyncHandler(
-
+export const prediction = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const replicateApiToken = req.headers.authorization;
-      if (!replicateApiToken) {
-        return res.status(403).json({
-          status: 403,
-          message: "API key required.",
-        });
-      }
-
       const replicate = new Replicate({
-        auth: replicateApiToken,
+        auth: req.headers.authorization,
       });
 
-      const { model, input } = req.body as IModel;
+      const { model, input } = req.body;
 
       const output = await replicate.run(
         model,

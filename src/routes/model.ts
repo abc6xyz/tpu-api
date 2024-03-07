@@ -1,10 +1,9 @@
 import express, { Router } from "express";
-import { runModel } from "../controllers/model";
+import { prediction } from "../controllers/model";
 
 const router: Router = express.Router();
 
 // Public Routes
-// Run Model
-router.route("/run").post(runModel);
+router.route("/prediction").post(prediction);
 
 export default router;
