@@ -1,7 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { prediction, workflow } from "./routes";
+import { prediction, workflow, machine } from "./routes";
 
 // Create the express app and import the type of app from express;
 const app: Application = express();
@@ -37,6 +37,7 @@ app.get("/", (req: Request, res: Response) => {
 // All Routes
 app.use("/api/model", prediction);
 app.use("/api/workflow", workflow);
+app.use("/api/machine", machine);
 
 // Listen the server
 app.listen(port, async () => {
