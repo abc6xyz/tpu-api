@@ -1,40 +1,27 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middleware/asyncHandler";
 
-export const searchByQuery = asyncHandler(
+export const search = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const queryParams = req.params ? `?${new URLSearchParams(req.params).toString()}` : '';
-      const fullUrl = `https://console.vast.ai/api/v0/bundles${queryParams}`;
-
-      const offers = await (await fetch(fullUrl)).json();
-
-      res.status(200).json(offers) as Response;
-
-    } catch (error) {
-      console.log(error);
-
-      if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
-        }) as Response;
+      let offers = {}
+      if (req.method === "GET"){
+        console.log(req.params)
+        const queryParams = req.params ? `?${new URLSearchParams(req.params).toString()}` : '';
+        console.log(queryParams);
+        const fullUrl = `https://console.vast.ai/api/v0/bundles${queryParams}`;
+        offers = await (await fetch(fullUrl)).json();
       }
-    }
-  }
-);
 
-export const searchByFilter = asyncHandler(
-  async (req: Request, res: Response) => {
-    try {
-      const queryParams = req.body;
-
-      const fullUrl = `https://console.vast.ai/api/v0/bundles/`;
-
-      const offers = await (await fetch(fullUrl, {
-        method: "POST",
-        body: JSON.stringify(queryParams)
-      })).json();
+      if (req.method === "POST"){
+        const queryParams = req.body;
+        console.log(queryParams);
+        const fullUrl = `https://console.vast.ai/api/v0/bundles/`;
+        offers = await (await fetch(fullUrl, {
+          method: "POST",
+          body: JSON.stringify(queryParams)
+        })).json();
+      }
 
       res.status(200).json(offers) as Response;
 

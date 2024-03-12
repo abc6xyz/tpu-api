@@ -1,10 +1,9 @@
 import express, { Router } from "express";
-import { search } from "../controllers/machine";
+import { getHardware } from "../controllers/hardware";
 
 const router: Router = express.Router();
 
 // Public Routes
-router.route("/search").get(search);
-router.route("/search").post(search);
+router.route("/").get(getHardware);
 
 export default router;

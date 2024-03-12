@@ -1,10 +1,9 @@
 import express, { Router } from "express";
-import { search } from "../controllers/machine";
+import { prediction } from "../controllers/prediction";
 
 const router: Router = express.Router();
 
 // Public Routes
-router.route("/search").get(search);
-router.route("/search").post(search);
+router.route("/").post(prediction);
 
 export default router;
