@@ -36,7 +36,6 @@ const requireTpuApiKey = async (req: Request, res: Response, next: NextFunction)
 };
 // Apply the requireTpuApiKey middleware to all routes under "/api/model" model running...
 app.use("/api", (req, res, next) => {
-  console.log(req.path);
   if (req.path.startsWith('/credential')) {
     // Skip requireTpuApiKey for "/api/credential"
     next();

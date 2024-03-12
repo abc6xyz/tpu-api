@@ -5,9 +5,8 @@ import Replicate from "replicate";
 export const prediction = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      console.log("key: ", req.headers["tpu-api-key"])
       const replicate = new Replicate({
-        auth: req.headers["tpu-api-key"] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const { model, input } = req.body;
@@ -26,9 +25,8 @@ export const prediction = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }

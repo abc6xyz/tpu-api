@@ -25,7 +25,7 @@ export const generateApiKey = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
+        res.status(500).json({
           error: error.message.toString(),
         }) as Response;
       }

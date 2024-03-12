@@ -18,3 +18,4 @@ model Hardware {
   sku                   String
   name                  String
 }
+

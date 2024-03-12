@@ -31,9 +31,8 @@ export const getModel = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -72,9 +71,8 @@ export const listModelVersions = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -115,9 +113,8 @@ export const getModelVersion = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -133,7 +130,7 @@ export const listModels = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers["tpu-api-key"] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const response = await replicate.request("/models", {
@@ -148,9 +145,8 @@ export const listModels = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -195,9 +191,8 @@ export const createModel = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }

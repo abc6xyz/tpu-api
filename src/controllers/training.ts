@@ -51,9 +51,8 @@ export const createTraining = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -88,9 +87,8 @@ export const getTraining = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -125,9 +123,8 @@ export const cancelTraining = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -159,9 +156,8 @@ export const listTrainings = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }

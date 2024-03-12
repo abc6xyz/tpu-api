@@ -16,9 +16,8 @@ export const publish = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
@@ -40,9 +39,8 @@ export const get = asyncHandler(
       console.log(error);
 
       if (error instanceof Error) {
-        res.status(400).json({
-          status: 400,
-          message: error.message.toString(),
+        res.status(500).json({
+          error: "Internal server error"
         }) as Response;
       }
     }
