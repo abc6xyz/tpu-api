@@ -13,7 +13,7 @@ export const getModel = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const model_owner = req.params.model_owner;
@@ -51,7 +51,7 @@ export const listModelVersions = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const model_owner = req.params.model_owner;
@@ -93,7 +93,7 @@ export const getModelVersion = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const model_owner = req.params.model_owner;
@@ -176,7 +176,7 @@ export const createModel = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const { model_owner, model_name, options } = req.body;

@@ -7,7 +7,7 @@ export const getCollections = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
       
       const response = await replicate.request("/collections", {
@@ -36,7 +36,7 @@ export const getCollection = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
       
       const collection_slug = req.params.collection_slug;

@@ -20,7 +20,7 @@ export const createTraining = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
       
       const {model_owner, model_name, version_id, options} = req.body;
@@ -71,7 +71,7 @@ export const getTraining = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
       
       const training_id = req.params.training_id;
@@ -108,7 +108,7 @@ export const cancelTraining = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
       
       const training_id = req.params.training_id;
@@ -144,7 +144,7 @@ export const listTrainings = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const replicate = new Replicate({
-        auth: req.headers['tpu-api-key'] as string,
+        auth: process.env.REPLICATE_API_KEY as string,
       });
 
       const response = await replicate.request("/trainings", {
