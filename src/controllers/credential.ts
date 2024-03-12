@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middleware/asyncHandler";
-import { randomUUID } from "crypto";
+import { apiKeyGen } from "../utils";
 
 export const generateApiKey = asyncHandler(
   async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ export const generateApiKey = asyncHandler(
         return res.status(400).json({ error: 'Key name is required in the request body.' });
       }
 
-      const apiKey = randomUUID();
+      const apiKey = apiKeyGen(JSON.stringify({keyName}));
 
       res.status(200).json({
         success: true,
