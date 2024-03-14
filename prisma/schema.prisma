@@ -28,19 +28,21 @@ model Collection {
 
 model Model {
   id                    Int               @id @default(autoincrement())
-  cover_image_url       String
+  cover_image_url       String?
+  created_at            String
   default_example       Json
-  description           String
-  github_url            String
+  description           String?
+  github_url            String?
   latest_version        Json
-  license_url           String
+  license_url           String?
   name                  String
   owner                 String
-  paper_url             String
+  paper_url             String?
   run_count             Int
   url                   String
   visibility            String
   prediction            Prediction[]
+  collection_id         Int[]
 }
 
 model Prediction {

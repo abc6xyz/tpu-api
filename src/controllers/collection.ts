@@ -1,23 +1,20 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middleware/asyncHandler";
-import Replicate from "replicate";
+import { prisma } from "../utils/prisma";
 
 export const getCollections = asyncHandler(
 
   async (req: Request, res: Response) => {
     try {
-      const replicate = new Replicate({
-        auth: process.env.REPLICATE_API_KEY as string,
-      });
-      
-      const response = await replicate.request("/collections", {
-        method: "GET",
-      });
+      const collectionData = await prisma.collection.findMany({
+        select: {
+          name: true,
+          slug: true,
+          description: true
+        },
+      })
 
-      const output = await response.json()
-
-      res.status(200).json(output) as Response;
-
+      res.status(200).json(collectionData) as Response;
     } catch (error) {
       console.log(error);
 
@@ -34,20 +31,28 @@ export const getCollection = asyncHandler(
 
   async (req: Request, res: Response) => {
     try {
-      const replicate = new Replicate({
-        auth: process.env.REPLICATE_API_KEY as string,
+      const collection_slug = req.params.collection_slug;
+      
+      const collectionData = await prisma.collection.findFirst({
+        where: {
+          slug: collection_slug
+        }
       });
       
-      const collection_slug = req.params.collection_slug;
-
-      const response = await replicate.request(`/collections/${collection_slug}`, {
-        method: "GET",
+      if (!collectionData) {
+        res.status(404).json({error:"collection slug not found"}) as Response;
+        return;
+      }
+      
+      const models = await prisma.model.findMany({
+        where: {
+          collection_id: {
+            has: collectionData.id
+          }
+        }
       });
 
-      const output = await response.json()
-
-      res.status(200).json(output) as Response;
-
+      res.status(200).json({...collectionData, models}) as Response;
     } catch (error) {
       console.log(error);
 

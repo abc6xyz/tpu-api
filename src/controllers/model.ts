@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middleware/asyncHandler";
 import Replicate from "replicate";
+import { prisma } from "../utils/prisma";
 
 /**
  * Get information about a model
@@ -12,21 +13,17 @@ import Replicate from "replicate";
 export const getModel = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const replicate = new Replicate({
-        auth: process.env.REPLICATE_API_KEY as string,
-      });
-
       const model_owner = req.params.model_owner;
       const model_name = req.params.model_name;
 
-      const response = await replicate.request(`/models/${model_owner}/${model_name}`, {
-        method: "GET",
-      });
+      const modelData = await prisma.model.findFirst({
+        where:{
+          name: model_name,
+          owner: model_owner
+        }
+      })
 
-      const output = await response.json();
-
-      res.status(200).json(output) as Response;
-
+      res.status(200).json(modelData) as Response;
     } catch (error) {
       console.log(error);
 
@@ -49,24 +46,17 @@ export const getModel = asyncHandler(
 export const listModelVersions = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const replicate = new Replicate({
-        auth: process.env.REPLICATE_API_KEY as string,
-      });
-
       const model_owner = req.params.model_owner;
       const model_name = req.params.model_name;
 
-      const response = await replicate.request(
-        `/models/${model_owner}/${model_name}/versions`,
-        {
-          method: "GET",
+      const modelData = await prisma.model.findFirst({
+        where:{
+          name: model_name,
+          owner: model_owner
         }
-      );
+      })
 
-      const output = await response.json();
-
-      res.status(200).json(output) as Response;
-      
+      res.status(200).json(modelData?.latest_version) as Response;
     } catch (error) {
       console.log(error);
 
@@ -90,24 +80,18 @@ export const listModelVersions = asyncHandler(
 export const getModelVersion = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const replicate = new Replicate({
-        auth: process.env.REPLICATE_API_KEY as string,
-      });
-
       const model_owner = req.params.model_owner;
       const model_name = req.params.model_name;
       const version_id = req.params.version_id;
 
-      const response = await replicate.request(
-        `/models/${model_owner}/${model_name}/versions/${version_id}`,
-        {
-          method: "GET",
+      const modelData = await prisma.model.findFirst({
+        where:{
+          name: model_name,
+          owner: model_owner
         }
-      );
+      })
 
-      const output = await response.json();
-
-      res.status(200).json(output) as Response;
+      res.status(200).json(modelData?.latest_version) as Response;
 
     } catch (error) {
       console.log(error);
@@ -129,18 +113,25 @@ export const getModelVersion = asyncHandler(
 export const listModels = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const replicate = new Replicate({
-        auth: process.env.REPLICATE_API_KEY as string,
+      const modelsData = await prisma.model.findMany({
+        select: {
+          cover_image_url: true,
+          created_at: true,
+          default_example: true,
+          description: true,
+          github_url: true,
+          latest_version: true,
+          license_url: true,
+          name: true,
+          owner: true,
+          paper_url: true,
+          run_count: true,
+          url: true,
+          visibility: true
+        },
       });
 
-      const response = await replicate.request("/models", {
-        method: "GET",
-      });
-
-      const output = await response.json();
-
-      res.status(200).json(output) as Response;
-
+      res.status(200).json(modelsData) as Response;
     } catch (error) {
       console.log(error);
 
