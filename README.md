@@ -6,12 +6,5 @@
   
 Default port: `5000`  
 
-## Test  
-### Run model  
-~~~
-curl --request POST \
-  --url http://localhost:5000/api/model/run \
-  --header "Content-Type: application/json" \
-  --header "Authorization: r8_1lRn9l5QQJv0pgRqUu2ZkgBuC1wcMBe337HTI" \
-  --data '{"model": "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b", "input": { "prompt": "An astronaut riding a rainbow unicorn, cinematic, dramatic"}}'
-~~~
+## API Documentation   
+[TPU-API v1.0.0 - Swagger API documentation](https://app.swaggerhub.com/apis-docs/MathewLazarte/TUPAPI/1.0.0#/)
