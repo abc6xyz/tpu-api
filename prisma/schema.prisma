@@ -19,3 +19,50 @@ model Hardware {
   name                  String
 }
 
+model Collection {
+  id                    Int               @id @default(autoincrement())
+  name                  String
+  slug                  String
+  description           String
+}
+
+model Model {
+  id                    Int               @id @default(autoincrement())
+  cover_image_url       String
+  default_example       Json
+  description           String
+  github_url            String
+  latest_version        Json
+  license_url           String
+  name                  String
+  owner                 String
+  paper_url             String
+  run_count             Int
+  url                   String
+  visibility            String
+  prediction            Prediction[]
+}
+
+model Prediction {
+  id                    Int               @id @default(autoincrement())
+  input                 Json
+  result                Json
+  model_id              Int
+  model                 Model             @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  user_id               Int
+  user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model ApiKey {
+  id                    Int               @id @default(autoincrement())
+  key                   String
+  user_id               Int
+  user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                    Int               @id @default(autoincrement())
+  email                 String            @unique     // both indexed and unique
+  prediction            Prediction[]
+  apikey                ApiKey[]
+}
