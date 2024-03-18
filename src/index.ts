@@ -34,14 +34,26 @@ const requireTpuApiKey = async (req: Request, res: Response, next: NextFunction)
   }
   next(); // Continue to the next middleware or route handler
 };
+
+const requireWallet = async (req: Request, res: Response, next: NextFunction) => {
+  const walletHeader = req.headers['user-wallet'] as string;
+  if (!walletHeader) {
+    return res.status(401).json({ error: 'Bad request. User wallet missing' });
+  }
+  next();
+}
+
 // Apply the requireTpuApiKey middleware to all routes under "/api/model" model running...
 app.use("/api", (req, res, next) => {
-  if (req.path.startsWith('/credential') || (req.path.startsWith('/model') && !req.path.match('/model/create')) || req.path.startsWith('/collection') || req.path.startsWith('/hardware')) {
+  if ((req.path.startsWith('/model') && !req.path.match('/model/create')) || req.path.startsWith('/collection') || req.path.startsWith('/hardware')) {
     // Skip requireTpuApiKey for "/api/credential"
     next();
   } else {
-    // Apply requireTpuApiKey for other routes under "/api"
-    requireTpuApiKey(req, res, next);
+    if (req.path.startsWith("/credential")) {
+      requireWallet(req, res, next);
+    } else {
+      requireTpuApiKey(req, res, next);
+    }
   }
 });
 

@@ -57,6 +57,7 @@ model Prediction {
 
 model ApiKey {
   id                    Int               @id @default(autoincrement())
+  name                  String
   key                   String
   user_id               Int
   user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -64,7 +65,8 @@ model ApiKey {
 
 model User {
   id                    Int               @id @default(autoincrement())
-  email                 String            @unique     // both indexed and unique
+  wallet                String            @unique     // both indexed and unique
+  balance               Int               @default(0)
   prediction            Prediction[]
   apikey                ApiKey[]
 }
