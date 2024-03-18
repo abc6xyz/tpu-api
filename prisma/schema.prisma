@@ -57,7 +57,7 @@ model Prediction {
 
 model ApiKey {
   id                    Int               @id @default(autoincrement())
-  name                  String
+  name                  String            @unique     // both indexed and unique
   key                   String
   user_id               Int
   user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
