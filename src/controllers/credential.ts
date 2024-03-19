@@ -26,15 +26,36 @@ export const generateApiKey = asyncHandler(
       }
 
       const apiKey = apiKeyGen(JSON.stringify({keyName}));
-      await prisma.apiKey.create({
-        data: {
+
+      const existingApiKey = await prisma.apiKey.findUnique({
+        where: {
           name: keyName,
-          key: apiKey,
-          user: {
-            connect: { id: user.id } // Associate the API key with the user
-          }
+          user_id: user.id
         }
       });
+      
+      if (existingApiKey) {
+        // Update the existing API key
+        await prisma.apiKey.update({
+          where: {
+            id: existingApiKey.id
+          },
+          data: {
+            key: apiKey // Update the API key
+          }
+        });
+      } else {
+        // Create a new API key
+        await prisma.apiKey.create({
+          data: {
+            name: keyName,
+            key: apiKey,
+            user: {
+              connect: { id: user.id } // Associate the API key with the user
+            }
+          }
+        });
+      }
 
       res.status(200).json({
         success: true,
