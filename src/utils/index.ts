@@ -24,7 +24,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
-    jwt.verify(token, 'your-secret-key', (err, decoded) => {
+    jwt.verify(token, process.env.SECRET_KEY as string, (err, decoded) => {
         if (err) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
