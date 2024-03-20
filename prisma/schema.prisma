@@ -57,7 +57,7 @@ model Prediction {
 
 model ApiKey {
   id                    Int               @id @default(autoincrement())
-  name                  String            @unique     // both indexed and unique
+  name                  String
   key                   String
   user_id               Int
   user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -69,4 +69,15 @@ model User {
   balance               Int               @default(0)
   prediction            Prediction[]
   apikey                ApiKey[]
+  workflow              Workflow[]
+}
+
+model Workflow {
+  id                    Int               @id @default(autoincrement())
+  name                  String
+  nodes                 Json[]
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+  user_id               Int
+  user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

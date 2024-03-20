@@ -44,23 +44,19 @@ const requireWallet = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 // Apply the requireTpuApiKey middleware to all routes under "/api/model" model running...
-app.use("/api", (req, res, next) => {
-  if ((
-    req.path.startsWith('/model') && !req.path.match('/model/create')) ||
-    req.path.startsWith('/collection') ||
-    req.path.startsWith('/hardware') ||
-    req.path.match('/machine/search')
-  ) {
-    // Skip requireTpuApiKey for "/api/credential"
+app.use("/api/model/create", requireTpuApiKey);
+app.use("/api/prediction", requireTpuApiKey);
+app.use("/api/training", requireTpuApiKey);
+app.use("/api/machine", (req, res, next) => {
+  if(req.path.match('/search')) {
     next();
   } else {
-    if (req.path.startsWith("/credential")) {
-      requireWallet(req, res, next);
-    } else {
-      requireTpuApiKey(req, res, next);
-    }
+    requireTpuApiKey(req, res, next);
   }
 });
+
+app.use("/api/workflow", requireWallet);
+app.use("/api/credential", requireWallet);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("TPU API Server running...");

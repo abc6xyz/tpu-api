@@ -27,7 +27,7 @@ export const generateApiKey = asyncHandler(
 
       const apiKey = apiKeyGen(JSON.stringify({keyName}));
 
-      const existingApiKey = await prisma.apiKey.findUnique({
+      const existingApiKey = await prisma.apiKey.findFirst({
         where: {
           name: keyName,
           user_id: user.id
