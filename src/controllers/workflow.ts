@@ -3,25 +3,15 @@ import asyncHandler from "../middleware/asyncHandler";
 import { prisma } from "../utils/prisma";
 
 export const createWorkflow = asyncHandler(
-
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        }
-      })
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
+      const { id } = req.user;
 
       const workflow = await prisma.workflow.create({
         data: {
           name: "Untitled",
           nodes: [],
-          user: { connect: { id: user?.id } }
+          user: { connect: { id } }
         }
       })
 
@@ -40,26 +30,16 @@ export const createWorkflow = asyncHandler(
 );
 
 export const deleteWorkflow = asyncHandler(
-
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        }
-      })
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
+      const { id } = req.user;
 
       const workflowId = parseInt(req.params.workflow_id);
 
       await prisma.workflow.findFirst({
         where: {
           id: workflowId,
-          user_id: user.id,
+          user_id: id,
         },
       });
 
@@ -78,26 +58,16 @@ export const deleteWorkflow = asyncHandler(
 );
 
 export const publish = asyncHandler(
-
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        }
-      })
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
+      const { id } = req.user;
 
       const workflowId = parseInt(req.params.workflow_id);
       const {name, nodes} = req.body;
       const workflow = await prisma.workflow.update({
         where: {
           id: workflowId,
-          user_id: user.id
+          user_id: id
         },
         data: {
           name,
@@ -122,22 +92,13 @@ export const publish = asyncHandler(
 export const get = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        }
-      })
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
+      const { id } = req.user;
 
       const workflowId = parseInt(req.params.workflow_id);
       const workflow =  await prisma.workflow.findUnique({
         where:{
           id: workflowId,
-          user_id: user.id
+          user_id: id
         }
       })
       
@@ -158,22 +119,13 @@ export const get = asyncHandler(
 export const run = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        }
-      })
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
+      const { id } = req.user;
 
       const workflowId = parseInt(req.params.workflow_id);
       const workflow =  await prisma.workflow.findUnique({
         where:{
           id: workflowId,
-          user_id: user.id
+          user_id: id
         }
       })
 

@@ -1,36 +1,24 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middleware/asyncHandler";
-import { apiKeyGen } from "../utils";
+import { apiKeyGen, generateToken } from "../utils";
 import { prisma } from "../utils/prisma";
 
 export const generateApiKey = asyncHandler(
   async (req: Request, res: Response) => {
     try {
+      const { id } = req.user;
       const { keyName } = req.body;
 
       if ( !keyName ) {
         return res.status(400).json({ error: 'Key name is required in the request body.' });
       }
 
-      const userWallet = req.headers['user-wallet'] as string;
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        },
-        select: {
-          id: true
-        }
-      });
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
-
-      const apiKey = apiKeyGen(JSON.stringify({keyName}));
+      const apiKey = apiKeyGen(JSON.stringify({userId: id}));
 
       const existingApiKey = await prisma.apiKey.findFirst({
         where: {
           name: keyName,
-          user_id: user.id
+          user_id: id
         }
       });
       
@@ -51,7 +39,7 @@ export const generateApiKey = asyncHandler(
             name: keyName,
             key: apiKey,
             user: {
-              connect: { id: user.id } // Associate the API key with the user
+              connect: { id } // Associate the API key with the user
             }
           }
         });
@@ -80,22 +68,11 @@ export const generateApiKey = asyncHandler(
 export const getApiKeys = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-      const user = await prisma.user.findUnique({
-        where: {
-          wallet: userWallet
-        },
-        select: {
-          id: true
-        }
-      });
-      if (!user) {
-        return res.status(400).json({ error: 'User not found' });
-      }
+      const { id } = req.user;
 
       const apis = await prisma.apiKey.findMany({
         where: {
-          user_id: user.id
+          user_id: id
         },
         select: {
           name: true,
@@ -117,30 +94,33 @@ export const getApiKeys = asyncHandler(
   }
 )
 
+// login user, sign up user if not exist.
 export const getCredential = asyncHandler(
   async (req: Request, res: Response) => {
     try {
-      const userWallet = req.headers['user-wallet'] as string;
-      const user = await prisma.user.findUnique({
+      const { wallet } = req.body;
+
+      let user = await prisma.user.findUnique({
         where: {
-          wallet: userWallet
+          wallet
         }
       });
       if (!user) {
-        const newUser = await prisma.user.create({
+        user = await prisma.user.create({
           data: {
-            wallet: userWallet,
+            wallet,
           },
           select: {
+            id: true,
             wallet: true,
             balance: true,
           }
         })
-        return res.status(200).json(newUser) as Response;
       }
 
-      return res.status(200).json({wallet: user.wallet, balance: user.balance}) as Response;
-      
+      const token = generateToken({ id:user.id });
+      return res.status(200).json({ token }) as Response;
+
     } catch (error) {
       console.log(error);
 

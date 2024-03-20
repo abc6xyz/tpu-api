@@ -2,7 +2,19 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { model, workflow, machine, credential, hardware, training, collection, prediction } from "./routes";
-import { decryptApiKey } from "./utils";
+import { decryptApiKey, verifyToken } from "./utils";
+
+interface User {
+  id: number;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: User; // Define user property as optional
+    }
+  }
+}
 
 // Create the express app and import the type of app from express;
 const app: Application = express();
@@ -27,26 +39,17 @@ const requireTpuApiKey = async (req: Request, res: Response, next: NextFunction)
     return res.status(401).json({ error: 'TPU API key missing' });
   }
   try {
-    const userInfo = await JSON.parse(decryptApiKey(apiKeyHeader));
-    console.log("userInfo: ", userInfo);
+    const apiKeyInfo = await JSON.parse(decryptApiKey(apiKeyHeader));
+    req.body.userId = apiKeyInfo.userId;
+    next(); // Continue to the next middleware or route handler
   } catch (error) {
     return res.status(401).json({ error: 'Invalid TPU API key' });
   }
-  next(); // Continue to the next middleware or route handler
 };
 
-const requireWallet = async (req: Request, res: Response, next: NextFunction) => {
-  const walletHeader = req.headers['user-wallet'] as string;
-  if (!walletHeader) {
-    return res.status(401).json({ error: 'Bad request. User wallet missing' });
-  }
-  next();
-}
-
 // Apply the requireTpuApiKey middleware to all routes under "/api/model" model running...
-app.use("/api/model/create", requireTpuApiKey);
 app.use("/api/prediction", requireTpuApiKey);
-app.use("/api/training", requireTpuApiKey);
+// app.use("/api/training", requireTpuApiKey);
 app.use("/api/machine", (req, res, next) => {
   if(req.path.match('/search')) {
     next();
@@ -55,8 +58,14 @@ app.use("/api/machine", (req, res, next) => {
   }
 });
 
-app.use("/api/workflow", requireWallet);
-app.use("/api/credential", requireWallet);
+app.use("/api/workflow", verifyToken);
+app.use("/api/credential", (req, res, next) => {
+  if (req.path === '/') {
+      next(); // Skip token verification for /credential endpoint
+  } else {
+      verifyToken(req, res, next);
+  }
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("TPU API Server running...");
