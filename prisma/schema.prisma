@@ -41,7 +41,7 @@ model Model {
   run_count             Int
   url                   String
   visibility            String
-  prediction            Prediction[]
+  // prediction            Prediction[]
   collection_id         Int[]
 }
 
@@ -49,8 +49,10 @@ model Prediction {
   id                    Int               @id @default(autoincrement())
   input                 Json
   result                Json
-  model_id              Int
-  model                 Model             @relation(fields: [model_id], references: [id], onDelete: Cascade)
+  cost                  Float
+  model                 String
+  // model_id              Int
+  // model                 Model             @relation(fields: [model_id], references: [id], onDelete: Cascade)
   user_id               Int
   user                  User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
@@ -66,7 +68,7 @@ model ApiKey {
 model User {
   id                    Int               @id @default(autoincrement())
   wallet                String            @unique     // both indexed and unique
-  balance               Int               @default(0)
+  balance               Float               @default(0)
   prediction            Prediction[]
   apikey                ApiKey[]
   workflow              Workflow[]

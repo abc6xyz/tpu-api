@@ -80,6 +80,23 @@ export const prediction = asyncHandler(
           balance: user.balance - issuedBalance
         }
       })
+
+      await prisma.prediction.create({
+        data: {
+          input,
+          result: output,
+          cost: issuedBalance,
+          user: { connect: { id } },
+          model
+        },
+        select: {
+          id: true,
+          input: true,
+          result: true,
+          cost: true
+        }
+      })
+
       res.status(200).json(output) as Response;
 
     } catch (error) {
@@ -93,3 +110,48 @@ export const prediction = asyncHandler(
     }
   }
 );
+
+export const getPredcitionHistory = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      console.log(req.user, req.body)
+      let id;
+      if (req.user) {
+        id =  req.user.id;
+      } else {
+        id = req.body.userId;
+      }
+      const user = await prisma.user.findUnique({
+        where: {
+          id
+        }
+      })
+      if (!user) {
+        return res.status(400).json({ error: 'User not found' });
+      }
+
+      const history = await prisma.prediction.findMany({
+        where: {
+          user_id: id
+        },
+        select: {
+          input: true,
+          result: true,
+          cost: true,
+          model: true
+        }
+      });
+      
+      res.status(200).json(history) as Response;
+
+    } catch (error) {
+      console.log(error);
+
+      if (error instanceof Error) {
+        res.status(500).json({
+          error: "Internal server error"
+        }) as Response;
+      }
+    }
+  }
+)
