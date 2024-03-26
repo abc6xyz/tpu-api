@@ -6,11 +6,14 @@ export const createWorkflow = asyncHandler(
   async (req: Request, res: Response) => {
     try {
       const { id } = req.user;
+      const { name, nodes, edges, sequence } = req.body;
 
       const workflow = await prisma.workflow.create({
         data: {
-          name: "Untitled",
-          nodes: [],
+          name,
+          nodes,
+          edges,
+          sequence,
           user: { connect: { id } }
         }
       })
