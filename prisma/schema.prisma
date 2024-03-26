@@ -78,6 +78,8 @@ model Workflow {
   id                    Int               @id @default(autoincrement())
   name                  String
   nodes                 Json[]
+  edges                 Json[]
+  sequence              Json[]
   created_at            DateTime          @default(now())
   updated_at            DateTime          @updatedAt
   user_id               Int
