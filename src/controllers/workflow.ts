@@ -32,6 +32,50 @@ export const createWorkflow = asyncHandler(
   }
 );
 
+export const workflowList = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.user;
+
+      const workflows = await prisma.workflow.findMany({
+        where: {
+          user_id: id,
+        },
+        select: {
+          id: true,
+          name: true,
+          nodes: true,
+          edges: true,
+          created_at: true,
+          updated_at: true,
+        }
+      });
+
+      const results = workflows.map(workflow => ({
+          id: workflow.id,
+          name: workflow.name,
+          nodes_count: workflow.nodes.length,
+          edges_count: workflow.edges.length,
+          created_at: workflow.created_at,
+          updated_at: workflow.updated_at,
+        })
+      );
+    
+
+      res.status(200).json(results) as Response;
+
+    } catch (error) {
+      console.log(error);
+
+      if (error instanceof Error) {
+        res.status(500).json({
+          error: "Internal server error"
+        }) as Response;
+      }
+    }
+  }
+)
+
 export const deleteWorkflow = asyncHandler(
   async (req: Request, res: Response) => {
     try {
